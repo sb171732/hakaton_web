@@ -1,21 +1,28 @@
 <template>
    <div id="app">
+    <el-button type="text" v-if="user!=null">выход</el-button>
     <el-menu :default-active="activeIndex" router mode="horizontal">
       <el-menu-item index="1" route="/">Поставщики</el-menu-item>
       <el-menu-item index="2" route="/menu">Меню</el-menu-item>
+      
     </el-menu>
         <router-view></router-view>
    </div>
 </template>
 
 <script>
-
+import {store} from './store'
 export default {
   name: 'app',
   data() {
     return{
       activeIndex:'1',
      
+    }
+  },
+  computed:{
+    user(){
+      return store.state.user
     }
   }
 }

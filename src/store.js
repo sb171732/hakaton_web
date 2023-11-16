@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { vuexfireMutations, firestoreAction } from 'vuexfire'
+import { vuexfireMutations, firestoreAction, firebaseAction } from 'vuexfire'
 import { db } from './db'
 import firebase from 'firebase/app'
 
@@ -10,10 +10,14 @@ export const store = new Vuex.Store({
     state: {
         food_provider:[],  // переменные , данные , состояние 
         teachers:[],
-        menu:[]
+        menu:[],
+        user:null
     },
     mutations: {
         ...vuexfireMutations,  // мутации изменяют state если происходят action
+        SET_USER(state, user) {
+            state.user = user
+          }
     },
     actions: {
         bindFP: firestoreAction(({ bindFirestoreRef }) => {
@@ -43,8 +47,22 @@ export const store = new Vuex.Store({
                 .doc(id)
                 .update(doc)
         }),
-
-       
+        setUserRef: firebaseAction(({ bindFirebaseRef }, ref) => {
+            bindFirebaseRef('user', ref)
+          }),
+          getLoginStatus({commit}){
+            let vm = this
+            firebase.auth().onAuthStateChanged(function(user) {
+              if (user) {
+                vm.user = user
+                commit('getUserInfo',user)
+                console.log("// User is signed in by Phone Number : ", user.phoneNumber)
+              } else {
+                vm.user = null
+                console.log("// No user is signed in.")
+              }
+            });
+       },
        initFirebase(){
         //  const firebaseApp =
           firebase.initializeApp({
@@ -59,6 +77,7 @@ export const store = new Vuex.Store({
         },
     }
 })
+
 
 
 store.dispatch('bindFP')
