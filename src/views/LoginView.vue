@@ -16,18 +16,48 @@ export default{
   data(){
     return{
       authInput: {
-                    txtEmail: '',
-                    txtPassword: ''
+                    txtEmail: 'sauronkan@gmail.com',
+                    txtPassword: '123123'
                 }
     }
   },
   computed:{
-    user(){ return store.state.user }
+    user(){ return store.state.user },
+    auth_error(){ return store.state.auth_error },
   },
   methods:{
     signIn(){
-      store.dispatch('signIn', { email:this.authInput.txtEmail, password:this.authInput.txtPassword })
+      store.dispatch('login', { email:this.authInput.txtEmail, password:this.authInput.txtPassword })
     }
+  },
+  created(){
+    // store.dispatch('getLoginStatus')
+  },
+  watch:{
+    user(to){
+      if (this.user!=null) 
+        if (to.user.emailVerified) this.$router.push('/fp')
+        
+      
+    },
+  auth_error(to){
+     if (this.auth_error!=null){
+      
+      // console.log(to)
+      if (to =='auth/too-many-requests') { 
+        this.$message.error('Превышено количество запросов, подождите!');
+        store.commit('set_error','')
+      }
+      // if (to =='auth/too-many-requests') { this.$message.error('Превышено количество запросов, подождите!'); }
+      // switch(to) {
+      //   case 'auth/too-many-requests': this.$message.error('Превышено количество запросов, подождите!');
+      //     break
+      //   // case 'auth/too-many-requests': this.$message.error('Превышено количество запросов, подождите!');
+      //   default: this.$message.error('Ошибка!');
+
+      // }
+     }
+  }
   }
 }
 

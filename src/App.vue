@@ -1,9 +1,10 @@
 <template>
    <div id="app">
-    <el-button type="text" v-if="user!=null">выход</el-button>
+    <el-button type="text" v-if="user!=null" @click="logout()">выход</el-button>
     <el-menu :default-active="activeIndex" router mode="horizontal">
       <el-menu-item index="1" route="/">Поставщики</el-menu-item>
       <el-menu-item index="2" route="/menu">Меню</el-menu-item>
+      <el-menu-item index="3" route="/zac">Заказы</el-menu-item>
       
     </el-menu>
         <router-view></router-view>
@@ -23,6 +24,16 @@ export default {
   computed:{
     user(){
       return store.state.user
+    }
+  },
+  methods:{
+    logout(){
+      store.dispatch('logout')
+    }
+  },
+  watch:{
+    user(to){
+      console.log(to)
     }
   }
 }

@@ -3,7 +3,9 @@ import Vuex from 'vuex'
 import { vuexfireMutations, firestoreAction, firebaseAction } from 'vuexfire'
 import { db } from './db'
 import firebase from 'firebase/app'
-
+// import fb from 'firebase'
+import auth from './store/auth'
+// import router from './router';
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({
@@ -11,13 +13,17 @@ export const store = new Vuex.Store({
         food_provider:[],  // переменные , данные , состояние 
         teachers:[],
         menu:[],
-        user:null
+        user:null,
+        auth_error:null
     },
     mutations: {
         ...vuexfireMutations,  // мутации изменяют state если происходят action
-        SET_USER(state, user) {
-            state.user = user
-          }
+        SET_USER(state, { user, token }) {
+            state.user = { user:user, token:token }
+          },
+          set_error(state, error){
+            state.auth_error = error
+          }  
     },
     actions: {
         bindFP: firestoreAction(({ bindFirestoreRef }) => {
@@ -50,19 +56,23 @@ export const store = new Vuex.Store({
         setUserRef: firebaseAction(({ bindFirebaseRef }, ref) => {
             bindFirebaseRef('user', ref)
           }),
-          getLoginStatus({commit}){
-            let vm = this
-            firebase.auth().onAuthStateChanged(function(user) {
-              if (user) {
-                vm.user = user
-                commit('getUserInfo',user)
-                console.log("// User is signed in by Phone Number : ", user.phoneNumber)
-              } else {
-                vm.user = null
-                console.log("// No user is signed in.")
-              }
-            });
-       },
+    
+
+          // getLoginStatus({commit}){
+          //   let vm = this
+          //   fb.auth().onAuthStateChanged(function(user) {
+          //     if (user) {
+          //       vm.user = user
+          //       const token = user.getIdToken()
+          //       commit('SET_USER',{user, token})
+          //       console.log("// User is signed: ", user.email)
+          //     } else {
+          //       vm.user = null
+          //       console.log("// No user is signed in.")
+          //       router.push('/')
+          //     }
+          //   });
+      //  },
        initFirebase(){
         //  const firebaseApp =
           firebase.initializeApp({
@@ -75,6 +85,9 @@ export const store = new Vuex.Store({
   measurementId: "G-TCZZQXYEB8"
           });
         },
+    },
+    modules:{
+      auth
     }
 })
 
